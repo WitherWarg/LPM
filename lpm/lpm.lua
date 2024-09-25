@@ -19,6 +19,17 @@ function LPM:update(dt)
     self.world:update(dt)
 end
 
+function LPM:draw()
+    for _, collider in ipairs(self.colliders) do
+        collider:draw()
+    end
+end
+
+function LPM:release()
+    self.world:destroy()
+end
+
+--#region Collider Management
 function LPM:newRectangleCollider(x, y, width, height, body_type)
     local collider = Collider(self, "Rectangle", x, y, width, height, body_type)
     table.insert(self.colliders, collider)
@@ -47,15 +58,14 @@ function LPM:removeCollider(collider)
         end
     end
 end
+--#endregion
 
-function LPM:draw()
-    for _, collider in ipairs(self.colliders) do
-        collider:draw()
-    end
-end
+--#region Querying
 
-function LPM:release()
-    self.world:destroy()
-end
+--#endregion
+
+--#region Classes
+
+--#endregion
 
 return setmetatable(LPM, { __call = New })
