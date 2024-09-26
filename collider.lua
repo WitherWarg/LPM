@@ -60,7 +60,7 @@ local function New(_, lpm, shape_type, ...)
         local x1, y1, x2, y2, body_type = ...
 
         self.body = love.physics.newBody(lpm.world, 0, 0, body_type)
-        self.shape = love.physics.newChainShape(x1, y1, x2, y2)
+        self.shape = love.physics.newEdgeShape(x1, y1, x2, y2)
     end
 
     self.fixture = love.physics.newFixture(self.body, self.shape)
