@@ -1,7 +1,6 @@
 {
     "Lua.diagnostics.globals": [
         "love",
-        "player"
     ],
     "Lua.diagnostics.disable": [
         "trailing-space",
