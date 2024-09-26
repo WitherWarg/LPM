@@ -89,6 +89,13 @@ function LPM:newBSGRectangleCollider(x, y, width, height, corner_cut_size, body_
     return collider
 end
 
+function LPM:newLineCollider(x1, y1, x2, y2, body_type)
+    local collider = Collider(self, "Line", x1, y1, x2, y2, body_type)
+    table.insert(self.colliders, collider)
+
+    return collider
+end
+
 function LPM:removeCollider(collider)
     for i=#self.colliders, 1, -1 do
         if self.colliders[i] == collider then
@@ -99,7 +106,36 @@ end
 --#endregion
 
 --#region Querying
-function LPM:queryRectangleArea(x, y, width, height)
+local function filter_query(lpm, colliders, class_names)
+    if class_names == nil then
+        return colliders
+     end
+  
+     for i=#colliders, 1, -1 do
+        local coll = colliders[i]
+        local categories = {coll:getCategory()}
+        local is_match = false
+  
+        for _, class_name in ipairs(class_names) do
+           local class = lpm.classes[class_name]
+           assert(class ~= nil, string.format('Class "%s" does not exist.', class_name))
+  
+           for _, category in ipairs(categories) do
+              if class.category == category then
+                 is_match = true
+              end
+           end
+        end
+  
+        if not is_match then
+           table.remove(colliders, i)
+        end
+     end
+  
+     return colliders
+end
+
+function LPM:queryRectangleArea(x, y, width, height, class_names)
     local colliders = {}
 
     self.world:queryBoundingBox(x, y, x + width, y + height, function (fixture)
@@ -110,10 +146,10 @@ function LPM:queryRectangleArea(x, y, width, height)
 
     table.insert(self.queries, { type = "Rectangle", arguments = { x, y, width, height } })
 
-    return colliders
+    return filter_query(self, colliders, class_names)
 end
 
-function LPM:queryLine(x1, y1, x2, y2)
+function LPM:queryLine(x1, y1, x2, y2, class_names)
     local colliders = {}
 
     self.world:rayCast(x1, y1, x2, y2, function (fixture)
@@ -124,7 +160,7 @@ function LPM:queryLine(x1, y1, x2, y2)
 
     table.insert(self.queries, { type = "Line", arguments = { x1, y1, x2, y2 } })
 
-    return colliders
+    return filter_query(self, colliders, class_names)
 end
 --#endregion
 
