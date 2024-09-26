@@ -52,7 +52,7 @@ function LPM:draw()
         goto continue
     end
 
-    love.graphics.setColor(1, 1, 1, 0.5)
+    love.graphics.setColor(0, 0, 0, 0.1)
 
     for i=#self.queries, 1, -1 do
         if self.queries[i].type == "Line" then
