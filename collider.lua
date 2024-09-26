@@ -1,7 +1,7 @@
 local Collider = {}
 
 local file_path = string.gsub(..., 'collider', '')
-SetFunctions = require(file_path .. 'utils')
+SetFunctions = require(file_path .. 'set_functions')
 
 local function New(_, lpm, shape_type, ...)
     local self = {}
