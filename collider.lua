@@ -56,6 +56,11 @@ local function New(_, lpm, shape_type, ...)
 
         self.body = love.physics.newBody(lpm.world, x, y, body_type)
         self.shape = love.physics.newCircleShape(r)
+    elseif shape_type == "Line" then
+        local x1, y1, x2, y2, body_type = ...
+
+        self.body = love.physics.newBody(lpm.world, 0, 0, body_type)
+        self.shape = love.physics.newChainShape(x1, y1, x2, y2)
     end
 
     self.fixture = love.physics.newFixture(self.body, self.shape)
@@ -69,6 +74,10 @@ local function New(_, lpm, shape_type, ...)
     SetFunctions(self, self.fixture)
     SetFunctions(self, self.shape)
 
+    self:setFriction(0)
+    self:setMass(1)
+    self:setFixedRotation(true)
+
     return setmetatable(self, { __index = Collider })
 end
 
@@ -79,6 +88,8 @@ function Collider:draw()
         love.graphics.circle('line', self:getX(), self:getY(), self:getRadius())
     elseif shape_type == "polygon" then
         love.graphics.polygon('line', self:getWorldPoints(self:getPoints()))
+    elseif shape_type == "edge" then
+        love.graphics.line(self:getWorldPoints(self:getPoints()))
     end
 end
 
