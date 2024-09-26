@@ -52,7 +52,7 @@ function LPM:draw()
         goto continue
     end
 
-    love.graphics.setColor(0, 0, 0, 0.1)
+    love.graphics.setColor(0, 0, 0)
 
     for i=#self.queries, 1, -1 do
         if self.queries[i].type == "Line" then
@@ -160,10 +160,10 @@ end
 function LPM:queryLine(x1, y1, x2, y2, class_names)
     local colliders = {}
 
-    self.world:rayCast(x1, y1, x2, y2, function (fixture)
+    self.world:queryBoundingBox(x1, y1, x2, y2, function (fixture)
         table.insert(colliders, fixture:getUserData())
 
-        return 1
+        return true
     end)
 
     table.insert(self.queries, { type = "Line", arguments = { x1, y1, x2, y2 } })
