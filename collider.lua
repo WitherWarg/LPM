@@ -48,6 +48,10 @@ local function New(_, lpm, shape_type, ...)
             return height
         end
 
+        function self:getCornerCutSize()
+            return corner_cut_size
+        end
+
         function self:getDimensions()
             return self:getWidth(), self:getHeight()
         end
@@ -106,6 +110,7 @@ function Collider:resize(...)
         end
     elseif self.shape_type == "BSGRectangle" then
         local width, height, corner_cut_size = ...
+        corner_cut_size = corner_cut_size or self:getCornerCutSize()
 
         self.shape = love.physics.newPolygonShape(
             -width / 2, -height / 2 + corner_cut_size,
@@ -146,7 +151,8 @@ function Collider:resize(...)
     self:setMass(mass)
     self:setCategory(unpack(category))
     self:setMask(unpack(mask))
- end
+end
+
 function Collider:draw()
     local shape_type = self:getType()
 
