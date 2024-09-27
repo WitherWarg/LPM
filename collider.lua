@@ -81,6 +81,72 @@ local function New(_, lpm, shape_type, ...)
     return setmetatable(self, { __index = Collider })
 end
 
+function Collider:resize(...)
+    local mass = self:getMass()
+    local density = self:getDensity()
+    local user_data = self.fixture:getUserData()
+    local category = {self:getCategory()}
+    local mask = {self:getMask()}
+
+    self.shape:release()
+
+    if self.shape_type == "Rectangle" then
+        local width, height = ...
+
+        self.shape:release()
+
+        self.shape = love.physics.newRectangleShape(width, height)
+
+        function self:getWidth()
+            return width
+        end
+
+        function self:getHeight()
+            return height
+        end
+    elseif self.shape_type == "BSGRectangle" then
+        local width, height, corner_cut_size = ...
+
+        self.shape = love.physics.newPolygonShape(
+            -width / 2, -height / 2 + corner_cut_size,
+            -width / 2 + corner_cut_size, -height / 2,
+            width / 2 - corner_cut_size, -height / 2,
+            width / 2, -height / 2 + corner_cut_size,
+            width / 2, height / 2 - corner_cut_size,
+            width / 2 - corner_cut_size, height / 2,
+            -width / 2 + corner_cut_size, height / 2,
+            -width / 2, height / 2 - corner_cut_size
+        )
+
+        function self:getWidth()
+            return width
+        end
+
+        function self:getHeight()
+            return height
+        end
+    elseif self.shape_type == "Circle" then
+        local r = ...
+
+        self.shape = love.physics.newCircleShape(r)
+    elseif self.shape_type == "Line" then
+        local x1, y1, x2, y2 = ...
+
+        self.shape = love.physics.newEdgeShape(x1, y1, x2, y2)
+    end
+ 
+    self.fixture:destroy()
+ 
+    self.fixture = love.physics.newFixture(self.body, self.shape, density)
+    self.fixture:setUserData(user_data)
+ 
+    SetFunctions(self, self.fixture)
+    SetFunctions(self, self.shape)
+ 
+    self:setMass(mass)
+    self:setCategory(unpack(category))
+    self:setMask(unpack(mask))
+ end
 function Collider:draw()
     local shape_type = self:getType()
 
