@@ -22,6 +22,9 @@ local function New(_, xg, yg, sleep)
 end
 
 function LPM:update(dt)
+    -- Reset queries to be drawn
+    self.queries = {}
+
     self.world:update(dt)
 end
 
@@ -51,19 +54,26 @@ function LPM:draw()
     love.graphics.setColor(unpack(color))
 
     if not self.can_draw_queries then
+        print(self.can_draw_queries)
+        love.event.quit()
         return
     end
 
-    for i=#self.queries, 1, -1 do
-        if self.queries[i].type == "Line" then
-            love.graphics.line(unpack(self.queries[i].arguments))
+    for _, query in ipairs(self.queries) do
+        if query.type == "Line" then
+            local x1, y1, x2, y2 = unpack(query.arguments)
+            love.graphics.line(x1, y1, x2, y2)
         end
 
-        if self.queries[i].type == "Rectangle" then
-            love.graphics.rectangle('line', unpack(self.queries[i].arguments))
+        if query.type == "Rectangle" then
+            local x, y, width, height = unpack(query.arguments)
+            love.graphics.rectangle('line', x, y, width, height)
         end
 
-        table.remove(self.queries, i)
+        if query.type == "Circle" then
+            local x, y, r = unpack(query.arguments)
+            love.graphics.circle('line', x, y, r)
+        end
     end
 end
 
