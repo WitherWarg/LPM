@@ -48,11 +48,11 @@ function LPM:draw()
         collider:draw()
     end
 
-    if not self.can_draw_queries then
-        goto continue
-    end
+    love.graphics.setColor(unpack(color))
 
-    love.graphics.setColor(0, 0, 0)
+    if not self.can_draw_queries then
+        return
+    end
 
     for i=#self.queries, 1, -1 do
         if self.queries[i].type == "Line" then
@@ -65,10 +65,6 @@ function LPM:draw()
 
         table.remove(self.queries, i)
     end
-
-    ::continue::
-
-    love.graphics.setColor(unpack(color))
 end
 
 function LPM:release()
