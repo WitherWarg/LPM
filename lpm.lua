@@ -34,19 +34,15 @@ function LPM:draw()
     for _, collider in ipairs(self.colliders) do
         love.graphics.setColor(unpack(self.classes['Default'].color))
 
-        if not collider.classes then
-            goto continue
-        end
-
-        for _, name in ipairs(collider.classes) do
-            local class = self.classes[name]
-
-            if class.color ~= self.classes['Default'].color and class.color ~= nil then
-                love.graphics.setColor(unpack(class.color))
+        if collider.classes then
+            for _, name in ipairs(collider.classes) do
+                local class = self.classes[name]
+    
+                if class.color ~= self.classes['Default'].color and class.color ~= nil then
+                    love.graphics.setColor(unpack(class.color))
+                end
             end
         end
-
-        ::continue::
 
         collider:draw()
     end
@@ -54,8 +50,6 @@ function LPM:draw()
     love.graphics.setColor(unpack(color))
 
     if not self.can_draw_queries then
-        print(self.can_draw_queries)
-        love.event.quit()
         return
     end
 
