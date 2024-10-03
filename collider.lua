@@ -79,8 +79,8 @@ local function New(_, lpm, shape_type, ...)
     SetFunctions(self, self.shape)
 
     self:setFriction(0)
-    self:setMass(1)
     self:setFixedRotation(true)
+    self:setMass(1)
 
     return setmetatable(self, { __index = Collider })
 end
