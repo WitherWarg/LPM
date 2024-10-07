@@ -4,6 +4,48 @@ file_path = string.reverse(string.gsub(string.reverse(...), 'mpl', '', 1))
 local Collider = require(file_path .. 'collider')
 local SetFunctions = require(file_path .. 'set_functions')
 
+local function DrawQueries(self)
+    for _, query in ipairs(self.queries) do
+        if query.type == "Line" then
+            local x1, y1, x2, y2 = unpack(query.arguments)
+            love.graphics.line(x1, y1, x2, y2)
+        end
+
+        if query.type == "Rectangle" then
+            local x, y, width, height = unpack(query.arguments)
+            love.graphics.rectangle('line', x, y, width, height)
+        end
+
+        if query.type == "Circle" then
+            local x, y, r = unpack(query.arguments)
+            love.graphics.circle('line', x, y, r)
+        end
+    end
+end
+
+local function DrawCollider(classes, collider)
+    local default_color = classes['Default'].color
+
+    if not collider.classes then
+        collider:draw()
+    end
+
+    for i, name in ipairs(collider.classes) do
+        local class = classes[name]
+
+        if class.color[1] ~= default_color[1] or class.color[2] ~= default_color[2] or class.color[3] ~= default_color[3] then
+            love.graphics.setColor(unpack(class.color))
+            break
+        end
+
+        if i == #collider.classes then
+            love.graphics.setColor(unpack(default_color))
+        end
+    end
+
+    collider:draw()
+end
+
 local function New(_, xg, yg, sleep)
     local self = {
         world = love.physics.newWorld(xg, yg, sleep),
@@ -29,46 +71,17 @@ function LPM:update(dt)
 end
 
 function LPM:draw()
-    local color = {love.graphics.getColor()}
+    love.graphics.push('all')
+
+    if self.can_draw_queries then
+        DrawQueries(self)
+    end
 
     for _, collider in ipairs(self.colliders) do
-        love.graphics.setColor(unpack(self.classes['Default'].color))
-
-        if collider.classes then
-            for _, name in ipairs(collider.classes) do
-                local class = self.classes[name]
-    
-                if class.color ~= self.classes['Default'].color and class.color ~= nil then
-                    love.graphics.setColor(unpack(class.color))
-                end
-            end
-        end
-
-        collider:draw()
+        DrawCollider(self.classes, collider)
     end
 
-    love.graphics.setColor(unpack(color))
-
-    if not self.can_draw_queries then
-        return
-    end
-
-    for _, query in ipairs(self.queries) do
-        if query.type == "Line" then
-            local x1, y1, x2, y2 = unpack(query.arguments)
-            love.graphics.line(x1, y1, x2, y2)
-        end
-
-        if query.type == "Rectangle" then
-            local x, y, width, height = unpack(query.arguments)
-            love.graphics.rectangle('line', x, y, width, height)
-        end
-
-        if query.type == "Circle" then
-            local x, y, r = unpack(query.arguments)
-            love.graphics.circle('line', x, y, r)
-        end
-    end
+    love.graphics.pop()
 end
 
 function LPM:release()
