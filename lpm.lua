@@ -173,10 +173,10 @@ end
 function LPM:queryLine(x1, y1, x2, y2, class_names)
     local colliders = {}
 
-    self.world:queryBoundingBox(x1, y1, x2, y2, function (fixture)
+    self.world:rayCast(x1, y1, x2, y2, function (fixture)
         table.insert(colliders, fixture:getUserData())
 
-        return true
+        return 1
     end)
 
     table.insert(self.queries, { type = "Line", arguments = { x1, y1, x2, y2 } })
